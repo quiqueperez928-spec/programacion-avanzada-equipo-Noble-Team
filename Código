@@ -1,0 +1,128 @@
+class Sensortemperatura: #Clase para sensores de temperatura
+    def __init__(self, modelo, tempinicial):
+        self._temperatura = tempinicial
+        self.modelo = modelo
+    
+    @property #Getter
+    def temperatura(self):
+        return self._temperatura
+    
+    @temperatura.setter
+    def temperatura(self, valor):
+        if valor < -40 or valor > 125 :
+            raise ValueError("Valor fuera de rango (-40 a 125)") #interrumpe el programa, ya que es un error
+        self._temperatura = valor
+
+    def actualizar_tem(self, nueva_temp): #Metodo
+        self.temperatura = nueva_temp
+    def sobrecalentamiento(self): #Metodo
+        if self.temperatura > 100 :
+            return True #El valor es valido pero consideramos que debemos registrar este dato.
+        return False
+    
+    def __str__(self):
+        return f"Sensor {self.modelo} Temperatura {self.temperatura}°C"
+
+    def __gt__(self, otro_sensor):
+        return self.temperatura > otro_sensor.temperatura
+
+class Ventilador: #2da clase
+    def __init__ (self, modelo, potencia_inicial):
+        self.modelo = modelo
+        self._potencia = potencia_inicial
+
+    @property #Getter
+    def potencia(self):
+        return self._potencia
+
+    @potencia.setter
+    def potencia(self, valor):
+        if valor < 0 or valor > 100 :
+            raise ValueError("Valor fuera de rango (0 a 100)") #interrumpe el programa, ya que es un error
+        self._potencia = valor
+
+    def ajustar_potencia(self, N_potencia): #Metodo
+        self.potencia = N_potencia
+        
+    def esta_girando(self): #Metodo
+        if self.potencia > 0 :
+            return True
+        return False
+    
+    def __str__(self):
+        return f"Ventilador {self.modelo} Potencia {self.potencia}%"
+        
+class Bateria: #3ra clase
+    def __init__ (self, modelo, voltaje_inicial):
+        self.modelo = modelo
+        self._voltaje = voltaje_inicial
+
+    @property #Getter
+    def voltaje(self):
+        return self._voltaje
+
+    @voltaje.setter
+    def voltaje(self, valor):
+        if valor < 3.0 or valor > 4.2 :
+            raise ValueError("Rango no seguro, rango seguro: 3-4.2 V") #interrumpe el programa, ya que es un error
+        self._voltaje = valor
+
+    def actualizar_voltaje(self, N_voltaje): #Metodo
+        self.voltaje = N_voltaje
+        
+    def bateria_baja(self): #Metodo
+        if self.voltaje < 3.3 :  
+            return True
+        return False
+    
+    def __str__(self):
+        return f"Bateria {self.modelo}  {self.voltaje}V"
+
+    def __add__(self, otra_bateria):
+        if not isinstance(otra_bateria, Bateria):
+            return NotImplemented
+        return Bateria("Arreglo en Serie", self.voltaje + otra_bateria.voltaje)
+
+class Sistematermico: #Clase de todo el sistema
+    def __init__(self, sensor, ventilador, bateria):
+        self.sensor = sensor
+        self.ventilador = ventilador
+        self.bateria = bateria
+
+    def control_automatico(self):
+        if self.sensor.temperatura > 35: #Leemos el atributo del sensor
+            self.ventilador.ajustar_potencia(100)#Llamamos a la función del ventilador para darle una orden
+        else:
+            self.ventilador.ajustar_potencia(0)
+        if self.bateria.bateria_baja(): #Llamamos a la función de la batería para revisar seguridad
+            print("Alerta: Batería baja. Apagando sistema por seguridad.")
+            self.ventilador.ajustar_potencia(0)
+
+#Prueba
+
+#Crea los 3 objetos 1 de cada clase
+mi_sensor = Sensortemperatura("LM35", 38) 
+mi_ventilador = Ventilador("DCfan", 0)
+mi_bateria = Bateria("Li-Po 3.7V", 4.0)
+
+placa_base = Sistematermico(mi_sensor, mi_ventilador, mi_bateria)
+
+print("--- ANTES DEL CONTROL ---")
+print(mi_ventilador)
+
+placa_base.control_automatico()
+
+print("--- DESPUÉS DEL CONTROL ---")
+print(mi_ventilador)
+
+sensor_ambiente = Sensortemperatura("LM35", 25)
+print("¿Sensor principal mayor al ambiente?:", mi_sensor > sensor_ambiente)
+
+bateria_extra = Bateria("Li-Po 3.7V", 3.7)
+bateria_serie = mi_bateria + bateria_extra
+print("Baterías en serie:", bateria_serie)
+
+try:
+    mi_bateria.voltaje = 12.0
+except ValueError as e:
+    print(f"Sistema protegido, error atrapado: {e}")
