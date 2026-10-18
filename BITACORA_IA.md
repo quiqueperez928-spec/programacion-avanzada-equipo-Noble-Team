@@ -8,7 +8,7 @@
 > "Ayúdanos a construir la práctica paso a paso. Queremos guiar la programación nosotros mismos para entender cada línea de código y estar preparados para la defensa presencial."
 
 ### **Orientación y Proceso de Aprendizaje del Equipo:**
-1. **Selección de la Arquitectura:** Elegimos desarrollar un *Sistema de Control Térmico* (Opción B) compuesto por `Sensortemperatura`, `Ventilador`, `Bateria` y la clase compuesta `Sistematermico`.
+1. **Selección de la Arquitectura:** Elegimos desarrollar un *Sistema de Control Térmico* compuesto por `Sensortemperatura`, `Ventilador`, `Bateria` y la clase compuesta `Sistematermico`.
 2. **Encapsulamiento y Validaciones (`@property`):**
    * Definimos el uso de atributos privados (ej. `_temperatura`, `_potencia`, `_voltaje`) para aislar los datos.
    * La IA nos explicó cómo funciona el decorador `@property` (getter) como interfaz de lectura y el `@property.setter` como filtro de entrada.
